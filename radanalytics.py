@@ -44,7 +44,7 @@ def analyze_image(image: str, thoth_user_api: str) -> str:
     })
     response.raise_for_status()
     _LOGGER.debug(f"Thoth user API responded with: {response.json()}")
-    return response.json()['pod_id']
+    return response.json()['analysis_id']
 
 
 def analyze_radanalytics_images(dockerhub_user: str, dockerhub_password: str, thoth_user_api: str) -> None:
@@ -56,8 +56,8 @@ def analyze_radanalytics_images(dockerhub_user: str, dockerhub_password: str, th
     for image in images:
         try:
             image = f"{image['namespace']}/{image['name']}"
-            pod_id = analyze_image(image, thoth_user_api)
-            _LOGGER.info(f"Image {image!r} is analyzed by {pod_id!r}")
+            analysis_id = analyze_image(image, thoth_user_api)
+            _LOGGER.info(f"Image {image!r} is analyzed by {analysis_id!r}")
         except Exception as exc:
             _LOGGER.exception(f"Failed to submit image for analysis: {str(exc)}")
 
