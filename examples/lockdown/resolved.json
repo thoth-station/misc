@@ -28,7 +28,7 @@
         "minor": ""
       }
     },
-    "hostname": "vorkstejsn",
+    "hostname": "solver-fedora-29-py36-e61843206520991f-local",
     "python": {
       "api_version": 1013,
       "implementation_name": "cpython",
