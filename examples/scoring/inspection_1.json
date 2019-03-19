@@ -77,7 +77,8 @@
       "512": {
         "elapsed_ms": 1.544952392578125,
         "rate": 173.58030790352592
-      }
+      },
+      "performance_index": 23.1232
     }
   },
   "specification": {
