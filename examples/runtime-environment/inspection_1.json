@@ -82,7 +82,7 @@
     }
   },
   "specification": {
-    "base": "fedora:29",
+    "base": "fedora:28",
     "build": {
       "requests": {
         "cpu": "500m",
