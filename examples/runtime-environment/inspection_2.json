@@ -181,7 +181,7 @@
           },
           {
             "name": "tensorflow-pypi-thoth-station-ninja",
-            "url": "https://tensorflow.pypi.thoth-station.ninja/index/fedora27/jemalloc/simple",
+            "url": "https://tensorflow.pypi.thoth-station.ninja/index/fedora28/jemalloc/simple",
             "verify_ssl": true
           }
         ]
@@ -203,7 +203,7 @@
             },
             {
               "name": "tensorflow-pypi-thoth-station-ninja",
-              "url": "https://tensorflow.pypi.thoth-station.ninja/index/fedora27/jemalloc/simple",
+              "url": "https://tensorflow.pypi.thoth-station.ninja/index/fedora28/jemalloc/simple",
               "verify_ssl": true
             }
           ]
@@ -428,7 +428,7 @@
           },
           "tensorflow": {
             "hashes": [
-              "sha256:f3137c5fc30ad18088a4c9c5f393acc1a045dd8601f2912f5de88a486ffe12f1"
+              "sha256:8b79794def9dc7307559282f7a49de4c4711e8b4d6594e9d65acaaefab752375"
             ],
             "index": "tensorflow-pypi-thoth-station-ninja",
             "version": "==1.9.0"
