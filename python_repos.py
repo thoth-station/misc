@@ -24,9 +24,11 @@ _LOGGER = logging.getLogger(__name__)
               help="An URL to Thoth's user API.")
 @click.option('--pages', '-p', type=int, default=1, show_default=True,
               help="Number of pages to be considered when querying GitHub API.")
-def cli(travis_token: str = None, github_token: str = None, selinon_api: str = None, pages: int = 1):
+@click.option('--offset', '-f', type=int, default=0, show_default=True,
+              help="Offset for pages considered when querying GitHub API.")
+def cli(travis_token: str = None, github_token: str = None, selinon_api: str = None, pages: int = 1, offset: int = 0):
     """Trigger aggregation of build logs in Travis API."""
-    for i in range(pages):
+    for i in range(offset, offset + pages):
         response = requests.get(
             GITHUB_URL_BASE,
             params={"q": "language:python", "sort": "stars", "order": "desc", "page": i},
