@@ -8,7 +8,7 @@ import daiquiri
 import click
 
 GITHUB_URL_BASE = "https://api.github.com/search/repositories"
-SELINON_API_URL = "http://selinon-api-fpokorny-thoth-dev.cloud.paas.upshift.redhat.com/api/v1/run-flow"
+SELINON_API_URL = "http://selinon-api-fpokorny-thoth-dev.cloud.paas.psi.redhat.com/api/v1/run-flow"
 
 daiquiri.setup(level=logging.INFO)
 
