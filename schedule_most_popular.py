@@ -26,7 +26,6 @@ import daiquiri
 
 daiquiri.setup(level=logging.INFO)
 
-
 _LOGGER = logging.getLogger(__name__)
 
 _POPULAR_PYPI_PACKAGES = "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-365-days.json"
