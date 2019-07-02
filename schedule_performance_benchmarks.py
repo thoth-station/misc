@@ -78,6 +78,16 @@ def create_pipfile_and_pipfile_lock_inputs(
     framework: str, framework_version: str, index_url: str
 ):
     """Create requirements and requirements_locked"""
+    if os.path.exists("{}".format("./Pipfile")):
+        os.remove("{}".format("./Pipfile"))
+    else:
+        _LOGGER.info("Pipfile was not present!")
+
+    if os.path.exists("{}".format("./Pipfile.lock")):
+        os.remove("{}".format("./Pipfile.lock"))
+    else:
+        _LOGGER.info("Pipfile.lock was not present!")
+
     if index_url == "https://pypi.python.org/simple":
         _LOGGER.info(
             " ".join(
@@ -130,9 +140,14 @@ def create_pipfile_and_pipfile_lock_inputs(
         )
 
     if os.path.exists("{}".format("./Pipfile")):
-        _LOGGER.info(f"Pipfile \n\n {pipfile2dict(pipfile_path='./Pipfile')}")
+        _LOGGER.info("Pipfile was created!")
     else:
-        _LOGGER.error("Pipfile not created!")
+        _LOGGER.error("Pipfile was not created!")
+
+    if os.path.exists("{}".format("./Pipfile.lock")):
+        _LOGGER.info("Pipfile.lock was created!")
+    else:
+        _LOGGER.error("Pipfile.lock was not created!")
 
 
 def verify_script_framework_compatibility(framework: str, script: str):
