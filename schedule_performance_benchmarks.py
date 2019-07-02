@@ -176,7 +176,8 @@ def schedule_performance_benchmarks(
     verify_script_framework_compatibility(framework=framework, script=benchmark)
     _LOGGER.info(f"Platform/Image selected is {image}")
     _LOGGER.info(f"Framework/Version selected is: {framework}:{framework_version}")
-    _LOGGER.info(f"Performance test selected is: {index_url}")
+    _LOGGER.info(f"Index source is: {index_url}")
+    _LOGGER.info(f"Performance test selected is: {benchmark}")
     _LOGGER.info(f"Number of inspections requested is: {count}")
     specification = create_amun_api_input(
         image=image,
