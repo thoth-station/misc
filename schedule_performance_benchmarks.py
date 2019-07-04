@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# thoth-performance
 # Copyright(C) 2019 Francesco Murdaca
 #
 # This program is free software: you can redistribute it and / or modify
@@ -15,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-"""Run Performance benchmark for testing using Amun."""
+"""Schedule Inspections for testing Performance Benchmarks to be evaluated using Amun."""
 
 
 import sys
@@ -26,6 +25,11 @@ import json
 from thoth.python import Source
 from thoth.python import Project
 from thoth.python import PackageVersion
+from pathlib import Path
+from exceptions import NotInstalledIndexException
+from exceptions import FileCreationException
+from exceptions import ScriptFrameworkIncompatibilityException
+
 
 import click
 import daiquiri
@@ -37,7 +41,7 @@ daiquiri.setup(level=logging.INFO)
 _LOGGER = logging.getLogger(__name__)
 
 
-def verify_framework_version_installed(framework_name: str, path: str):
+def verify_framework_version_installed(framework_name: str, path: str, index_url: str):
     """Verify framework/version installed provenance."""
     # TODO: Use provenance checker
     p = subprocess.Popen(
@@ -47,14 +51,15 @@ def verify_framework_version_installed(framework_name: str, path: str):
     )
     out, err = p.communicate()
     _LOGGER.info(out.decode("utf-8"))
-    if "Red Hat Inc." in out.decode("utf-8"):
-        _LOGGER.info(
-            "The index used for installation is from Red Hat AICoE Thoth Project"
-        )
-    else:
-        raise ValueError(
-            "The index used for installation is not from Red Hat AICoE Thoth Project"
-        )
+    if not index_url == "https://pypi.python.org/simple":
+        if "Red Hat Inc." in out.decode("utf-8"):
+            _LOGGER.info(
+                "The index used for installation is from Red Hat AICoE Thoth Project"
+            )
+        else:
+            raise NotInstalledIndexException(
+                "The index used for installation is not from Red Hat AICoE Thoth Project"
+            )
 
 
 def create_amun_api_input(
@@ -69,12 +74,13 @@ def create_amun_api_input(
         framework=framework, framework_version=framework_version, index_url=index_url
     )
     # Insert Pipfile and Pipfile.lock and make them str for input
-    current_path = os.getcwd()
-    new_dir_path = f"{current_path}/amun"
-    specification["python"]["requirements"] = pipfile2dict(
-        pipfile_path=f"{new_dir_path}/Pipfile"
-    )
-    with open("./Pipfile.lock") as json_file:
+    current_path = Path.cwd()
+    new_dir_path = current_path.joinpath("amun")
+    pipfile_path = new_dir_path.joinpath("Pipfile")
+    pipfile_lock_path = new_dir_path.joinpath("Pipfile.lock")
+
+    specification["python"]["requirements"] = pipfile2dict(pipfile_path=pipfile_path)
+    with open(pipfile_lock_path) as json_file:
         requirements_locked = json.load(json_file)
 
     specification["python"]["requirements_locked"] = requirements_locked
@@ -98,7 +104,7 @@ def update_json_specification(path_template_specification: str, content: object)
 
 
 def create_pipfile(
-    index_url: str, framework: str, framework_version: str, path_pipfile: str
+    index_url: str, framework: str, framework_version: str, pipfile_path: str
 ):
     """Create Pipfile from inputs."""
     packages = [
@@ -117,37 +123,28 @@ def create_pipfile(
     project.set_python_version("3.6")
     _LOGGER.info(f"Pipfile created:\n {project.pipfile.to_string()}")
 
-    with open(f"{path_pipfile}/Pipfile", "w+") as pipfile:
+    with open(pipfile_path, "w+") as pipfile:
         pipfile.write(project.pipfile.to_string())
-
-
-def create_directory(dir_path: str):
-    """Create directory for running commands."""
-    if not os.path.exists(f"{dir_path}"):
-        try:
-            os.mkdir(dir_path)
-            _LOGGER.info("Successfully created the directory %s " % dir_path)
-        except OSError:
-            _LOGGER.error("Creation of the directory %s failed" % dir_path)
-    else:
-        _LOGGER.info("Already exisiting directory %s " % dir_path)
 
 
 def create_pipfile_and_pipfile_lock_inputs(
     framework: str, framework_version: str, index_url: str
 ):
     """Create requirements and requirements_locked."""
-    current_path = os.getcwd()
-    new_dir_path = f"{current_path}/amun"
-    create_directory(dir_path=new_dir_path)
+    current_path = Path.cwd()
+    new_dir_path = current_path.joinpath("amun")
+    os.makedirs(new_dir_path, exist_ok=True)
 
-    if os.path.exists(f"{new_dir_path}/Pipfile"):
-        os.remove(f"{new_dir_path}/Pipfile")
+    pipfile_path = new_dir_path.joinpath("Pipfile")
+    pipfile_lock_path = new_dir_path.joinpath("Pipfile.lock")
+
+    if pipfile_path.exists():
+        os.remove(pipfile_path)
     else:
         _LOGGER.info("Pipfile was not present!")
 
-    if os.path.exists(f"{new_dir_path}/Pipfile.lock"):
-        os.remove(f"{new_dir_path}/Pipfile.lock")
+    if os.path.exists(pipfile_lock_path):
+        os.remove(pipfile_lock_path)
     else:
         _LOGGER.info("Pipfile.lock was not present!")
 
@@ -155,21 +152,23 @@ def create_pipfile_and_pipfile_lock_inputs(
         index_url=index_url,
         framework=framework,
         framework_version=framework_version,
-        path_pipfile=new_dir_path,
+        pipfile_path=pipfile_path,
     )
-    if os.path.exists(f"{new_dir_path}/Pipfile"):
+    if pipfile_path.exists():
         _LOGGER.info("Pipfile was created!")
     else:
-        _LOGGER.error("Pipfile was not created!")
+        raise FileCreationException("Pipfile was not created!")
 
     _LOGGER.info(" ".join(["Running...", "pipenv", "install"]))
     subprocess.call(["pipenv", "install"], cwd=new_dir_path)
-    verify_framework_version_installed(framework_name=framework, path=new_dir_path)
+    verify_framework_version_installed(
+        framework_name=framework, path=new_dir_path, index_url=index_url
+    )
 
-    if os.path.exists(f"{new_dir_path}/Pipfile.lock"):
+    if os.path.exists(pipfile_lock_path):
         _LOGGER.info("Pipfile.lock was created!")
     else:
-        _LOGGER.error("Pipfile.lock was not created!")
+        raise FileCreationException("Pipfile.lock was not created!")
 
 
 def verify_script_framework_compatibility(framework: str, script: str):
@@ -180,7 +179,7 @@ def verify_script_framework_compatibility(framework: str, script: str):
             f"Script selected for performance testing: {script}, is compatible with ML framework chosen: '{framework}'."
         )
     else:
-        raise ValueError(
+        raise ScriptFrameworkIncompatibilityException(
             f"Script selected for performance testing: {script}, is not compatible with ML framework chosen: '{framework}'."
         )
 
@@ -210,7 +209,7 @@ def schedule_performance_benchmarks(
     )
     _LOGGER.info(f"Specification input for Amun API is: {specification}")
     for inspection_n in range(0, count):
-        print(inspection_n + 1)
+        _LOGGER.info(inspection_n + 1)
         subprocess.call(
             [
                 "curl",
