@@ -207,6 +207,7 @@ def schedule_performance_benchmarks(
         index_url=index_url,
         benchmark=benchmark,
     )
+    _LOGGER.info(f"Scheduling inspection at {amun_api_url}")
     _LOGGER.info(f"Specification input for Amun API is: {specification}")
     for inspection_n in range(0, count):
         _LOGGER.info(inspection_n + 1)
