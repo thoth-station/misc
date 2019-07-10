@@ -18,24 +18,20 @@
             "path": "string"
         }
     ],
-    "packages": [
-        "vim"
+    "packages": [],
+    "python_packages": [
+        "pipenv"
     ],
     "python": {
         "requirements": {
             "packages": {
                 "tensorflow": {
-                    "index": "tensorflow-pypi-thoth-station-ninja",
+                    "index": "pypi-python-org",
                     "version": "==1.13.1"
                 }
             },
             "dev-packages": {},
             "source": [
-                {
-                    "url": "https://tensorflow.pypi.thoth-station.ninja/index/fedora28/jemalloc/simple/",
-                    "verify_ssl": true,
-                    "name": "tensorflow-pypi-thoth-station-ninja"
-                },
                 {
                     "url": "https://pypi.python.org/simple",
                     "verify_ssl": true,
@@ -49,18 +45,13 @@
         "requirements_locked": {
             "_meta": {
                 "hash": {
-                    "sha256": "e2728619373fdffab12639038bed4dcf0acf4d56ced2774bd6b806a79a2e171c"
+                    "sha256": "6e65a81f99f7799cd7cf93d7088b2857ac58a5bd20b749d2c07fab4795f4ebda"
                 },
                 "pipfile-spec": 6,
                 "requires": {
                     "python_version": "3.6"
                 },
                 "sources": [
-                    {
-                        "name": "tensorflow-pypi-thoth-station-ninja",
-                        "url": "https://tensorflow.pypi.thoth-station.ninja/index/fedora28/jemalloc/simple/",
-                        "verify_ssl": true
-                    },
                     {
                         "name": "pypi-python-org",
                         "url": "https://pypi.python.org/simple",
@@ -267,10 +258,9 @@
                         "sha256:c41862c65628261229db22e33f9e570d845eeb5cea66dcbaebe404405edaa69b",
                         "sha256:d7341617aedd73c2c847755e87697e9c19eb625c73da26d6cd669220c5565119",
                         "sha256:de0425b58cb34006e4500565239b4c3a3055b95bff132f097fa46c87d8e463c9",
-                        "sha256:f21fb65c8e874f40c654bc9b3ff3db3ec26f98f03fe64a541bc768f6f5c52ac2",
-                        "sha256:f6e9b5add5fa83ba766723659ab156981a2226f10214fee555c7008a4ed4c08d"
+                        "sha256:f21fb65c8e874f40c654bc9b3ff3db3ec26f98f03fe64a541bc768f6f5c52ac2"
                     ],
-                    "index": "tensorflow-pypi-thoth-station-ninja",
+                    "index": "pypi-python-org",
                     "version": "==1.13.1"
                 },
                 "tensorflow-estimator": {
