@@ -43,7 +43,6 @@ _LOGGER = logging.getLogger(__name__)
 
 def verify_framework_version_installed(framework_name: str, path: str, index_url: str):
     """Verify framework/version installed provenance."""
-    # TODO: Use provenance checker
     p = subprocess.Popen(
         ["pipenv", "run", "pip", "show", framework_name],
         cwd=path,
@@ -51,14 +50,14 @@ def verify_framework_version_installed(framework_name: str, path: str, index_url
     )
     out, err = p.communicate()
     _LOGGER.info(out.decode("utf-8"))
-    if not index_url == "https://pypi.python.org/simple":
+    if not index_url == "https://pypi.org/simple":
         if "Red Hat Inc." in out.decode("utf-8"):
             _LOGGER.info(
                 "The index used for installation is from Red Hat AICoE Thoth Project"
             )
         else:
             raise NotInstalledIndexException(
-                "The index used for installation is not from Red Hat AICoE Thoth Project"
+                f"The index used for installation is not the one requested: {out}"
             )
 
 
@@ -101,16 +100,16 @@ def create_amun_api_input(
     update_json_specification(
         path_template_specification="./inspection.json", content=specification
     )
+    _LOGGER.info(f"Updated the new json specification file for Amun API.")
     return specification
 
 
 def update_json_specification(path_template_specification: str, content: object):
-    """Update the dashboard with new changes."""
+    """Update the json specification with new changes."""
     os.remove("{}".format(path_template_specification))
 
     with open("{}".format(path_template_specification), "w") as outfile:
         json.dump(content, outfile, indent=4)
-    _LOGGER.info(f"Updated the new json specification file for Amun API.")
 
 
 def create_pipfile(
@@ -204,6 +203,7 @@ def schedule_performance_benchmarks(
     python_packages: str,
     index_url: str,
     count: int,
+    dry_run: bool, 
 ):
     """Schedule Performance benchmark."""
     verify_script_framework_compatibility(framework=framework, script=benchmark)
@@ -227,20 +227,21 @@ def schedule_performance_benchmarks(
     _LOGGER.info(f"Specification input for Amun API is: {specification}")
     for inspection_n in range(0, count):
         _LOGGER.info(inspection_n + 1)
-        subprocess.call(
-            [
-                "curl",
-                "-X",
-                "POST",
-                "--header",
-                "Content-Type: application/json",
-                "--header",
-                "Accept: application/json",
-                "-d",
-                "@inspection.json",
-                amun_api_url,
-            ]
-        )
+        if not dry_run:
+            subprocess.call(
+                [
+                    "curl",
+                    "-X",
+                    "POST",
+                    "--header",
+                    "Content-Type: application/json",
+                    "--header",
+                    "Accept: application/json",
+                    "-d",
+                    "@inspection.json",
+                    amun_api_url,
+                ]
+            )
 
 
 @click.command()
@@ -313,6 +314,14 @@ def schedule_performance_benchmarks(
     show_default=True,
     help="Number of inspections to be scheduled.",
 )
+@click.option(
+    "--dry-run",
+    "-d",
+    type=bool,
+    default=False,
+    show_default=True,
+    help="Do not schedule inspections, just check all inputs are created.",
+)
 def cli(
     amun_api_url: str,
     framework: str,
@@ -323,6 +332,7 @@ def cli(
     python_packages: str,
     index_url: str,
     count: int,
+    dry_run: bool
 ):
     """Trigger analysis of inspections for the selected platform/base_image, index_url and framework."""
     schedule_performance_benchmarks(
@@ -335,6 +345,7 @@ def cli(
         benchmark=benchmark,
         index_url=index_url,
         count=count,
+        dry_run=dry_run
     )
 
 
