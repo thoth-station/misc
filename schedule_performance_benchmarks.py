@@ -126,8 +126,8 @@ def create_pipfile(
     ]
     project = Project.from_package_versions(packages)
 
-    if not index_url == "https://pypi.python.org/simple":
-        project.add_source("https://pypi.python.org/simple")
+    if not index_url == "https://pypi.org/simple":
+        project.add_source("https://pypi.org/simple")
 
     project.set_python_version("3.6")
     _LOGGER.info(f"Pipfile created:\n {project.pipfile.to_string()}")
