@@ -62,11 +62,21 @@ def verify_framework_version_installed(framework_name: str, path: str, index_url
 
 
 def create_amun_api_input(
-    base_image: str, native_packages: str, python_packages: str, framework: str, framework_version: str, index_url: str, benchmark: str
+    name_inspection: str,
+    base_image: str,
+    native_packages: str,
+    python_packages: str,
+    framework: str,
+    framework_version: str,
+    index_url: str,
+    benchmark: str,
 ) -> dict:
     """Create specification for Amun API input."""
     with open("./inspection.json") as json_file:
         specification = json.load(json_file)
+
+    # Name of the inspection/s
+    specification["identifier"] = name_inspection
 
     specification["base"] = base_image
     if native_packages:
@@ -195,6 +205,7 @@ def verify_script_framework_compatibility(framework: str, script: str):
 
 def schedule_performance_benchmarks(
     amun_api_url: str,
+    name_inspection: str,
     framework: str,
     framework_version: str,
     benchmark: str,
@@ -203,7 +214,7 @@ def schedule_performance_benchmarks(
     python_packages: str,
     index_url: str,
     count: int,
-    dry_run: bool, 
+    dry_run: bool,
 ):
     """Schedule Performance benchmark."""
     verify_script_framework_compatibility(framework=framework, script=benchmark)
@@ -215,6 +226,7 @@ def schedule_performance_benchmarks(
     _LOGGER.info(f"Performance test selected is: {benchmark}")
     _LOGGER.info(f"Number of inspections requested is: {count}")
     specification = create_amun_api_input(
+        name_inspection=name_inspection,
         base_image=base_image,
         native_packages=native_packages,
         python_packages=python_packages,
@@ -255,16 +267,22 @@ def schedule_performance_benchmarks(
     help="Amun API URL to talk to.",
 )
 @click.option(
+    "--name-inspection",
+    "-n",
+    required=True,
+    type=str,
+    help="User' name given to the inspections.",
+)
+@click.option(
     "--base-image",
     "-i",
     required=True,
     type=str,
     help="Platform/Base_image used to run the inspection.",
 )
-
 @click.option(
     "--native-packages",
-    "-n",
+    "-r",
     type=str,
     default="",
     show_default=True,
@@ -324,6 +342,7 @@ def schedule_performance_benchmarks(
 )
 def cli(
     amun_api_url: str,
+    name_inspection: str,
     framework: str,
     framework_version: str,
     benchmark: str,
@@ -332,11 +351,12 @@ def cli(
     python_packages: str,
     index_url: str,
     count: int,
-    dry_run: bool
+    dry_run: bool,
 ):
     """Trigger analysis of inspections for the selected platform/base_image, index_url and framework."""
     schedule_performance_benchmarks(
         amun_api_url=amun_api_url,
+        name_inspection=name_inspection,
         base_image=base_image,
         native_packages=native_packages,
         python_packages=python_packages,
@@ -345,7 +365,7 @@ def cli(
         benchmark=benchmark,
         index_url=index_url,
         count=count,
-        dry_run=dry_run
+        dry_run=dry_run,
     )
 
 
