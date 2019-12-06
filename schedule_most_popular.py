@@ -57,7 +57,6 @@ def schedule_most_popular(management_api_url: str, api_secret: str, *, offset: i
                 params={
                     "secret": api_secret,
                     "debug": True,
-                    "no_subgraph_checks": False,
                 }
             )
             try:
