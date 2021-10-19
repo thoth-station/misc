@@ -17,6 +17,7 @@
 
 import os
 import logging
+import requests
 from typing import List
 
 import click
@@ -72,6 +73,10 @@ def _create_units(
 
     image_repo = f"https://quay.io/repository/thoth-station/{ps_name}"
     image = f"quay.io/thoth-station/{ps_name}"
+
+    response = requests.head(f"https://{image}", allow_redirects=True)
+    if response.status_code != 200:
+        _LOGGER.warning("Image %r is not accessible on Quay", image)
 
     prescription_file_path = (
         os.path.join(predictable_stacks_path, ps_name.replace("-", "_")) + ".yaml"
