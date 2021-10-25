@@ -48,12 +48,12 @@ _BOOT_BASE = """\
 
 
 def _make_prescription_boot_name(ps_package: str, ps_name: str) -> str:
-    """Create a name for predictive stack boot."""
+    """Create a name for predictable stack boot."""
     prescription_name = ""
     for part in map(str.capitalize, ps_package.split("-")):
         prescription_name += part
 
-    prescription_name += "PredictiveStack"
+    prescription_name += "PredictableStack"
 
     for part in map(str.capitalize, ps_name.split("-")):
         prescription_name += part
@@ -86,7 +86,7 @@ def _create_units(
     with open(os.path.join(prescription_file_path), "w") as f:
         f.write("units:\n  boots:\n")
         for package_name in ps_packages:
-            message = f"Consider using a predictive stack {ps_name!r} that has prepared environment with {package_name!r}"
+            message = f"Consider using a predictable stack {ps_name!r} that has prepared environment with {package_name!r}"
 
             f.write(
                 _BOOT_BASE.format(
@@ -106,7 +106,7 @@ def _create_units(
     "-p",
     type=str,
     required=True,
-    help="A path to predictive stack overlays where Pipfile is located",
+    help="A path to predictable stack overlays where Pipfile is located",
 )
 @click.option(
     "--prescriptions-path",
@@ -116,7 +116,7 @@ def _create_units(
     help="A root path to prescriptions directory",
 )
 def cli(verbose: bool, overlays_path: str, prescriptions_path: str):
-    """Create prescriptions out of a predictive stack repository."""
+    """Create prescriptions out of a predictable stack repository."""
     if verbose:
         _LOGGER.setLevel(logging.DEBUG)
 
