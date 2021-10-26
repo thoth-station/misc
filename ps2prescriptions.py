@@ -66,7 +66,6 @@ def _create_units(
     ps_name: str,
     info: str,
     prescriptions_path: str,
-    abbreviation: str,
 ) -> None:
     """Create a boot with the specified packages"""
     predictable_stacks_path = os.path.join(
@@ -82,9 +81,8 @@ def _create_units(
     if response.status_code != 200:
         _LOGGER.warning("Image %r is not accessible on Quay", image)
 
-    prescription_file_path = (
-        os.path.join(predictable_stacks_path, abbreviation, ps_name.replace("-", "_"))
-        + ".yaml"
+    prescription_file_path = os.path.join(
+        predictable_stacks_path, ps_name.replace("-", "_"), "recommendations.yaml"
     )
     os.makedirs(os.path.dirname(prescription_file_path), exist_ok=True)
     _LOGGER.info("Writing prescription YAML file to %r", prescription_file_path)
@@ -130,13 +128,6 @@ def _create_units(
     type=str,
     required=False,
     help="Additional info about the stack (ex. natural language).",
-)
-@click.option(
-    "--predictable-stack-abbreviation",
-    "-a",
-    type=str,
-    required=False,
-    help="Abbreviation used for the give predictable stack.",
 )
 def cli(
     verbose: bool,
