@@ -66,7 +66,7 @@ def _create_units(
 ) -> None:
     """Create a boot with the specified packages"""
     predictable_stacks_path = os.path.join(
-        prescriptions_path, "prescriptions", "_predictable_stacks"
+        prescriptions_path, "prescriptions", "_containers"
     )
     _LOGGER.info("Creating directory structure in %r", predictable_stacks_path)
     os.makedirs(predictable_stacks_path, exist_ok=True)
