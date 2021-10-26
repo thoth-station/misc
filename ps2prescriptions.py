@@ -62,7 +62,11 @@ def _make_prescription_boot_name(ps_package: str, ps_name: str) -> str:
 
 
 def _create_units(
-    ps_packages: List[str], ps_name: str, prescriptions_path: str
+    ps_packages: List[str],
+    ps_name: str,
+    info: str,
+    prescriptions_path: str,
+    abbreviation: str,
 ) -> None:
     """Create a boot with the specified packages"""
     predictable_stacks_path = os.path.join(
@@ -79,14 +83,19 @@ def _create_units(
         _LOGGER.warning("Image %r is not accessible on Quay", image)
 
     prescription_file_path = (
-        os.path.join(predictable_stacks_path, ps_name.replace("-", "_")) + ".yaml"
+        os.path.join(predictable_stacks_path, abbreviation, ps_name.replace("-", "_"))
+        + ".yaml"
     )
+    os.makedirs(os.path.dirname(prescription_file_path), exist_ok=True)
     _LOGGER.info("Writing prescription YAML file to %r", prescription_file_path)
 
     with open(os.path.join(prescription_file_path), "w") as f:
         f.write("units:\n  boots:\n")
         for package_name in ps_packages:
-            message = f"Consider using a predictable stack {ps_name!r} that has prepared environment with {package_name!r}"
+            message = (
+                f"Consider using a {info + ' ' if info else ''}predictable stack {ps_name!r} that "
+                f"has prepared environment with {package_name!r}"
+            )
 
             f.write(
                 _BOOT_BASE.format(
@@ -115,7 +124,27 @@ def _create_units(
     required=True,
     help="A root path to prescriptions directory",
 )
-def cli(verbose: bool, overlays_path: str, prescriptions_path: str):
+@click.option(
+    "--info",
+    "-i",
+    type=str,
+    required=False,
+    help="Additional info about the stack (ex. natural language).",
+)
+@click.option(
+    "--predictable-stack-abbreviation",
+    "-a",
+    type=str,
+    required=False,
+    help="Abbreviation used for the give predictable stack.",
+)
+def cli(
+    verbose: bool,
+    overlays_path: str,
+    info: str,
+    prescriptions_path: str,
+    predictable_stack_abbreviation: str,
+) -> None:
     """Create prescriptions out of a predictable stack repository."""
     if verbose:
         _LOGGER.setLevel(logging.DEBUG)
@@ -130,7 +159,13 @@ def cli(verbose: bool, overlays_path: str, prescriptions_path: str):
         pipfile = Pipfile.from_file(os.path.join(overlays_dir, "Pipfile"))
         ps_direct_packages = list(pipfile.packages.packages)
 
-        _create_units(ps_direct_packages, ps_name, prescriptions_path)
+        _create_units(
+            ps_direct_packages,
+            ps_name,
+            info,
+            prescriptions_path,
+            predictable_stack_abbreviation,
+        )
 
 
 __name__ == "__main__" and cli()
