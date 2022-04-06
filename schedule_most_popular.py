@@ -28,7 +28,7 @@ daiquiri.setup(level=logging.INFO)
 
 _LOGGER = logging.getLogger(__name__)
 
-_POPULAR_PYPI_PACKAGES = "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-365-days.json"
+_POPULAR_PYPI_PACKAGES = "https://hugovk.github.io/top-pypi-packages/top-pypi-packages-30-days.min.json"
 
 
 def schedule_most_popular(management_api_url: str, api_secret: str, *, offset: int, count: int) -> None:
